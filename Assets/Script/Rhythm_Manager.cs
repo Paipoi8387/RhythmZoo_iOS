@@ -8,35 +8,29 @@ public class Rhythm_Manager : MonoBehaviour
 {
     [SerializeField] Dram dram;
     [SerializeField] GameObject Dram_Image;
-    [SerializeField] AudioClip dram_bgm;
     const double dram_bpm = 130.02;
     const int  dram_max_turn_count = 20;
 
     [SerializeField] Eat eat;
     [SerializeField] GameObject Eat_Image;
-    [SerializeField] AudioClip eat_bgm;
     const double eat_bpm = 130.509;
     const int eat_max_turn_count = 17;
 
     [SerializeField] Grab grab;
     [SerializeField] GameObject Grab_Image;
-    [SerializeField] AudioClip grab_bgm;
     const double grab_bpm = 120;
     const int grab_max_turn_count = 22;
 
     [SerializeField] Clap clap;
     [SerializeField] GameObject Clap_Image;
-    [SerializeField] AudioClip clap_bgm;
     const double clap_bpm = 115.01;
     const int clap_max_turn_count = 14;
 
     [SerializeField] Dondon dondon;
     [SerializeField] GameObject Dondon_Image;
-    [SerializeField] AudioClip dondon_bgm;
     const double dondon_bpm = 110;
     const int dondon_max_turn_count = 16;
 
-    [SerializeField] AudioClip remix_bgm;
     const double remix_bpm = 130.01;
     const int remix_max_turn_count = 30;
     int remix_action_num = 1; //どのアクションを選択しているかの番号
@@ -54,6 +48,7 @@ public class Rhythm_Manager : MonoBehaviour
     [SerializeField] AudioClip beat_clip;
     [SerializeField] AudioClip gameover_clip;
 
+    bool is_loaded_bgm = false;
     //bool is_start = false;
     enum State { Null, Start, Rest, Stop, Finish}; //ゲームをスタートしたか、していないか
     State state = State.Null;
@@ -100,18 +95,18 @@ public class Rhythm_Manager : MonoBehaviour
         //stage_name = "Remix";
 
         if (stage_name == "Dram")
-        { Action_Initiate("Dram", dram_bgm, Dram_Image, dram_bpm, dram_max_turn_count); }
+        { Action_Initiate("Dram", Dram_Image, dram_bpm, dram_max_turn_count); }
         else if (stage_name == "Eat")
-        { Action_Initiate("Eat", eat_bgm, Eat_Image, eat_bpm, eat_max_turn_count); }
+        { Action_Initiate("Eat", Eat_Image, eat_bpm, eat_max_turn_count); }
         else if (stage_name == "Grab")
-        { Action_Initiate("Grab", grab_bgm, Grab_Image, grab_bpm, grab_max_turn_count); }
+        { Action_Initiate("Grab", Grab_Image, grab_bpm, grab_max_turn_count); }
         else if (stage_name == "Clap")
-        { Action_Initiate("Clap", clap_bgm, Clap_Image, clap_bpm, clap_max_turn_count); }
+        { Action_Initiate("Clap", Clap_Image, clap_bpm, clap_max_turn_count); }
         else if (stage_name == "Dondon")
-        { Action_Initiate("Dondon", dondon_bgm, Dondon_Image, dondon_bpm, dondon_max_turn_count); }
+        { Action_Initiate("Dondon", Dondon_Image, dondon_bpm, dondon_max_turn_count); }
         else if (stage_name == "Remix") //最初のステージはGrabにする
         {
-            Action_Initiate("Grab", remix_bgm, Grab_Image, remix_bpm, remix_max_turn_count);
+            Action_Initiate("Grab", Grab_Image, remix_bpm, remix_max_turn_count);
         }
     }
 
@@ -120,9 +115,12 @@ public class Rhythm_Manager : MonoBehaviour
         //イベントトリガーの起動用に一回ボタンを押させる
         if(state == State.Null && Button_Manager.button_location != Button_Manager.Button_Location.Null)
         {
-            Tap_Text.SetActive(false);
-            state = State.Finish;
-            Invoke("Music_Start", 1f);
+            if (is_loaded_bgm)
+            {
+                Tap_Text.SetActive(false);
+                state = State.Finish;
+                Invoke("Music_Start", 1f);
+            }
         }
 
 
@@ -153,7 +151,7 @@ public class Rhythm_Manager : MonoBehaviour
     }
 
     //背景や音楽、CSVの読み込みなどを行う予定
-    void Action_Initiate(string csv_name, AudioClip clip_name, GameObject back_image, double bpm_, int max_turn_count_)
+    void Action_Initiate(string csv_name, GameObject back_image, double bpm_, int max_turn_count_)
     {
         if (stage_name == "Remix")
         {
@@ -171,7 +169,7 @@ public class Rhythm_Manager : MonoBehaviour
             remix_action_num = 1;
         }
         Set_Timing_Array();
-        bgm_source.clip = clip_name;
+        Load_BGM("bgm/" + stage_name + "_bgm");
         bpm = bpm_;
         max_turn_count = max_turn_count_;
     }
@@ -395,5 +393,11 @@ public class Rhythm_Manager : MonoBehaviour
             string[] Line_List = Reader.ReadLine().Split(','); // 一行ずつ読み込み
             csv_data.Add(Line_List);
         }
+    }
+
+    void Load_BGM(string file_name)
+    {
+        bgm_source.clip = Resources.Load(file_name) as AudioClip; // Resouces下のaudioclip読み込み        
+        is_loaded_bgm = true;
     }
 }

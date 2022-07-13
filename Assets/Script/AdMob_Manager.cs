@@ -17,6 +17,8 @@ public class AdMob_Manager : MonoBehaviour
 
         RequestBanner();
         RequestReward();
+        //RequestInterstitial();
+
         //この処理をしなくても表示されるが、アクションシーンから戻ってきたときのために表示処理
         bannerView.Show();
     }
@@ -103,7 +105,7 @@ public class AdMob_Manager : MonoBehaviour
     //動画の視聴が完了したら実行される（途中で閉じられた場合は呼ばれない）
     public void HandleUserEarnedReward(object sender, Reward args)
     {
-        Debug.Log("報酬獲得！");
+        //Debug.Log("報酬獲得！");
         button_manager.Get_Coin_After_Ad();
         RequestReward();
     }
@@ -117,4 +119,32 @@ public class AdMob_Manager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// インタースティシャル広告
+    /// </summary>
+    /// 
+
+    private string adUnitId_interstitial;
+    private InterstitialAd interstitialAd;
+
+    public void RequestInterstitial()
+    {
+#if UNITY_ANDROID
+        //adUnitId_interstitial = "ca-app-pub-3940256099942544/1033173712";  //テスト
+        adUnitId_interstitial = "ca-app-pub-1567966195595585/8363742346";  //本番
+#elif UNITY_IOS
+        //adUnitId_interstitial = "ca-app-pub-3940256099942544/4411468910";  //テスト
+        adUnitId_interstitial = "ca-app-pub-1567966195595585/1714573510";  //本番
+#endif
+        this.interstitialAd = new InterstitialAd(adUnitId_interstitial);
+
+        AdRequest request = new AdRequest.Builder().Build();
+        interstitialAd.LoadAd(request);
+
+        if (this.interstitialAd.IsLoaded())
+        {
+            this.interstitialAd.Show();
+            RequestInterstitial();
+        }
+    }
 }

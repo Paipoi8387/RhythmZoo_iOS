@@ -95,8 +95,17 @@ public class Button_Manager : MonoBehaviour
         admob_manager.Hide_Banner();
 
         PlayerPrefs.SetString("STAGE_NAME", stage_name);
-        Debug.Log(PlayerPrefs.GetInt("STAGE_NAME", 0));
+        //Debug.Log(PlayerPrefs.GetInt("STAGE_NAME", 1));
 
+        //インタースティシャルを流す
+        int play_num = PlayerPrefs.GetInt("Play_Num", 1);
+        PlayerPrefs.SetInt("Play_Num", play_num + 1);
+        if (play_num % 5 == 0)
+        {
+            admob_manager.RequestInterstitial();
+            PlayerPrefs.SetInt("Play_Num", 1);
+            //sound_source.PlayOneShot(coin_sound);
+        }
         //引数渡しのが良いかも
         SceneManager.LoadScene("Action");
     }
@@ -104,6 +113,15 @@ public class Button_Manager : MonoBehaviour
     //アクションに遷移
     public void RetryButton()
     {
+        //インタースティシャルを流す
+        int play_num = PlayerPrefs.GetInt("Play_Num", 1);
+        PlayerPrefs.SetInt("Play_Num", play_num + 1);
+        if (play_num % 5 == 0)
+        {
+            admob_manager.RequestInterstitial();
+            PlayerPrefs.SetInt("Play_Num", 1);
+            //sound_source.PlayOneShot(coin_sound);
+        }
         SceneManager.LoadScene("Action");
     }
 

@@ -72,10 +72,11 @@ namespace  NCMB
 					return;
 				});
 
+				/*
 				#if UNITY_IOS
 					UnityEngine.iOS.NotificationServices.ClearRemoteNotifications ();
 				#endif
-
+				*/
 			}
 		}
 
